@@ -1,0 +1,10 @@
+# Arquivos gerados pela compilação (dotnet build / run)
+bin/
+obj/
+
+# Configurações locais do Visual Studio
+.vs/
+*.csproj.user
+
+# Configurações locais do JetBrains Rider
+.idea/

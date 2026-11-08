@@ -1,0 +1,88 @@
+﻿@page "/categorias"
+
+<h3>Categorias</h3>
+
+<div class="row">
+
+    <div class="col-md-4">
+        <div class="card card-body">
+            <EditForm Model="novaCategoria" OnValidSubmit="AdicionarCategoria">
+                <DataAnnotationsValidator/>
+
+                <label class="form-label">Nome</label>
+                <InputText class="form-control" @bind-Value="novaCategoria.Nome"/>
+                <ValidationMessage For="() => novaCategoria.Nome"/>
+                @if (mensagemDuplicada != "")
+                {
+                    <div class="validation-message">@mensagemDuplicada</div>
+                }
+
+                <label class="form-label">Quantidade</label>
+                <InputNumber class="form-control" @bind-Value="novaCategoria.Quantidade"
+                             ParsingErrorMessage="A quantidade deve ser um número."/>
+                <ValidationMessage For="() => novaCategoria.Quantidade"/>
+
+                <button type="submit" class="btn btn-primary mt-2">Adicionar categoria</button>
+            </EditForm>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Nome</th>
+                <th scope="col">Quantidade</th>
+            </tr>
+            </thead>
+            <tbody>
+            @if (categorias.Count == 0)
+            {
+                <tr>
+                    <td colspan="2" class="text-muted">Nenhuma categoria cadastrada</td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var c in categorias)
+                {
+                    <tr>
+                        <td>@c.Nome</td>
+                        <td>@c.Quantidade</td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    private Categoria novaCategoria = new();
+
+    private List<Categoria> categorias = new();
+
+    // Aviso da 3ª regra (fica vazio quando não há erro).
+    private string mensagemDuplicada = "";
+
+    private void AdicionarCategoria()
+    {
+        // 3ª regra: cada categoria só pode ser cadastrada uma vez.
+        // Faz sentido porque duas categorias com o mesmo nome confundiriam quem for classificar os produtos.
+        // Essa regra fica na página (e não no modelo) porque precisa conhecer a lista de categorias.
+        // A comparação ignora maiúsculas/minúsculas e espaços nas pontas ("Bebidas" = " bebidas ").
+        bool jaExiste = categorias.Any(c =>
+            c.Nome.Trim().Equals(novaCategoria.Nome.Trim(), StringComparison.OrdinalIgnoreCase));
+
+        if (jaExiste)
+        {
+            mensagemDuplicada = "Já existe uma categoria com esse nome.";
+            return;
+        }
+
+        mensagemDuplicada = "";
+        categorias.Add(novaCategoria);
+        novaCategoria = new();
+    }
+}

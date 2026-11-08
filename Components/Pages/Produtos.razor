@@ -1,0 +1,80 @@
+﻿@page "/produtos"
+
+<h3>Produtos</h3>
+
+<div class="row">
+
+    <div class="col-md-4">
+        <div class="card card-body">
+            @* O EditForm trabalha com um objeto (novoProduto) e só chama
+               AdicionarProduto quando todas as regras do modelo forem válidas. *@
+            <EditForm Model="novoProduto" OnValidSubmit="AdicionarProduto">
+                <DataAnnotationsValidator/>
+
+                <label class="form-label">Nome</label>
+                <InputText class="form-control" @bind-Value="novoProduto.Nome"/>
+                <ValidationMessage For="() => novoProduto.Nome"/>
+
+                <label class="form-label">Preço</label>
+                <InputNumber class="form-control" @bind-Value="novoProduto.Preco"
+                             ParsingErrorMessage="O preço deve ser um número."/>
+                <ValidationMessage For="() => novoProduto.Preco"/>
+
+                <label class="form-label">Quantidade</label>
+                <InputNumber class="form-control" @bind-Value="novoProduto.Quantidade"
+                             ParsingErrorMessage="A quantidade deve ser um número."/>
+                <ValidationMessage For="() => novoProduto.Quantidade"/>
+
+                <button type="submit" class="btn btn-primary mt-2">Adicionar produto</button>
+            </EditForm>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Nome</th>
+                <th scope="col">Preço</th>
+                <th scope="col">Quantidade</th>
+            </tr>
+            </thead>
+            <tbody>
+            @if (produtos.Count == 0)
+            {
+                <tr>
+                    <td colspan="3" class="text-muted">Nenhum produto cadastrado</td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var p in produtos)
+                {
+                    <tr>
+                        <td>@p.Nome</td>
+                        <td>R$@p.Preco</td>
+                        <td>@p.Quantidade un.</td>
+                    </tr>
+                }
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    // Objeto ligado ao formulário: os campos preenchem direto as propriedades dele.
+    private Produto novoProduto = new();
+
+    private List<Produto> produtos = new();
+
+    // Só é chamado pelo OnValidSubmit, ou seja, quando os dados já estão válidos.
+    private void AdicionarProduto()
+    {
+        produtos.Add(novoProduto);
+
+        // Um objeto novo deixa o formulário vazio para o próximo cadastro.
+        novoProduto = new();
+    }
+}
